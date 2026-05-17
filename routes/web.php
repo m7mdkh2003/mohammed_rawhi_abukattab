@@ -1,6 +1,9 @@
 <?php
 
+use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,4 +31,13 @@ Route::post('/about', function () {
     ];
 
     return view('about', compact('name', 'departments'));
+});
+Route::get('/tasks', function () {
+    return view('tasks');
+});
+
+Route::post('/create', function () {
+    $task_name=$_POST['name'];
+    DB::table('tasks')->insert(['name'=>$task_name]);
+    return view('tasks');
 });
