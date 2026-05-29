@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+
 
 Route::get(uri: '/', action: function (){
     return view(view: 'welcome');
@@ -35,42 +37,17 @@ Route::post(uri: '/about', action: function(){
     return view(view: 'about', data: compact( 'name',  'departments'));
 });
 
-Route::get('tasks', function () {
+Route::get('tasks',[TaskController::class,'index'] );
 
-    $tasks = DB::table('tasks')->get();
+Route::post('create',[TaskController::class,'create']);
 
-    return view('tasks', compact('tasks'));
-});
+Route::post('delete/{id}',[TaskController::class,'destroy'] );
 
-Route::post('create', function () {
+Route::post('edit/{id}',[TaskController::class,'edit'] );
 
-    DB::table('tasks')->insert([
-        'name' => $_POST['name']
-    ]);
+Route::post('update',[TaskController::class,'update']);
 
-    return redirect()->back();
-});
+Route::get('app',function(){
+    return view('layouts.app');
 
-Route::post('delete/{id}', function ($id) {
-
-    DB::table('tasks')->where('id', $id)->delete();
-
-    return redirect()->back();
-});
-
-Route::post('edit/{id}', function ($id) {
-
-    $task = DB::table('tasks')->where('id', $id)->first();
-
-    $tasks = DB::table('tasks')->get();
-
-    return view('tasks', compact('task', 'tasks'));
-});
-
-Route::post('update', function () {
-
- $id=$_POST['id'];
- DB::table('tasks')->where('id','=',$id)->update(['name' => $_POST['name']]);
-
-    return redirect('tasks');
 });
