@@ -18,26 +18,36 @@
         <div class="col-lg-8">
 
             @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ session('success') }}
 
-            <div class="alert alert-success alert-dismissible fade show">
+                    <button type="button"
+                            class="close"
+                            data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
+            @endif
 
-                {{ session('success') }}
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
 
-                <button type="button"
-                        class="close"
-                        data-dismiss="alert">
-
-                    <span>&times;</span>
-
-                </button>
-
-            </div>
-
+                    <button type="button"
+                            class="close"
+                            data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
             @endif
 
             <div class="card shadow mb-4">
 
-                @if (@isset($user))
+                @if (isset($user))
 
                 <div class="card-header bg-info text-white">
                     <h5 class="m-0">
@@ -48,13 +58,13 @@
 
                 <div class="card-body">
 
-                    <form action="{{url('user/update')}}" method="POST">
+                    <form action="{{ url('user/update') }}" method="POST">
+
+                        @csrf
 
                         <input type="hidden"
                                name="id"
-                               value="{{$user->id}}">
-
-                        @csrf
+                               value="{{ $user->id }}">
 
                         <div class="mb-3">
 
@@ -65,7 +75,7 @@
                             <input type="text"
                                    name="name"
                                    class="form-control"
-                                   value="{{$user->name}}">
+                                   value="{{ old('name', $user->name) }}">
 
                         </div>
 
@@ -78,7 +88,7 @@
                             <input type="email"
                                    name="email"
                                    class="form-control"
-                                   value="{{$user->email}}">
+                                   value="{{ old('email', $user->email) }}">
 
                         </div>
 
@@ -105,7 +115,7 @@
 
                 <div class="card-body">
 
-                    <form action="{{url('user/create')}}" method="POST">
+                    <form action="{{ url('user/create') }}" method="POST">
 
                         @csrf
 
@@ -118,7 +128,8 @@
                             <input type="text"
                                    name="name"
                                    class="form-control"
-                                   placeholder="Enter Name">
+                                   placeholder="Enter Name"
+                                   value="{{ old('name') }}">
 
                         </div>
 
@@ -131,7 +142,8 @@
                             <input type="email"
                                    name="email"
                                    class="form-control"
-                                   placeholder="Enter Email">
+                                   placeholder="Enter Email"
+                                   value="{{ old('email') }}">
 
                         </div>
 
@@ -186,12 +198,10 @@
                             <thead class="thead-dark">
 
                                 <tr>
-
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th width="220">Actions</th>
-
                                 </tr>
 
                             </thead>
@@ -202,15 +212,15 @@
 
                                 <tr>
 
-                                    <td>{{$user->id}}</td>
+                                    <td>{{ $user->id }}</td>
 
-                                    <td>{{$user->name}}</td>
+                                    <td>{{ $user->name }}</td>
 
-                                    <td>{{$user->email}}</td>
+                                    <td>{{ $user->email }}</td>
 
                                     <td>
 
-                                        <form action="/user/delete/{{$user->id}}"
+                                        <form action="/user/delete/{{ $user->id }}"
                                               method="POST"
                                               class="d-inline">
 
@@ -226,7 +236,7 @@
 
                                         </form>
 
-                                        <form action="/user/edit/{{$user->id}}"
+                                        <form action="/user/edit/{{ $user->id }}"
                                               method="POST"
                                               class="d-inline">
 

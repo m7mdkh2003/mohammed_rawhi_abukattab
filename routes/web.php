@@ -44,7 +44,7 @@ Route::post('create',[TaskController::class,'create']);
 
 Route::post('delete/{id}',[TaskController::class,'destroy'] );
 
-Route::post('edit/{id}',[TaskController::class,'edit'] );
+Route::get('/edit/{id}', [TaskController::class, 'edit']);
 
 Route::post('update',[TaskController::class,'update']);
 

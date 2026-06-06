@@ -2,24 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = DB::table('users')->get();
+        $users = User::all();
 
         return view('users', compact('users'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        DB::table('users')->insert([
-            'name' => $_POST['name'],
-            'email' => $_POST['email'],
-            'password' => bcrypt($_POST['password'])
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6'
+        ], [
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already taken.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 6 characters.'
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password
         ]);
 
         return redirect()->back();
@@ -27,28 +40,41 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        DB::table('users')->where('id', $id)->delete();
+        $user = User::findOrFail($id);
+        $user->delete();
 
         return redirect()->back();
     }
 
     public function edit($id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
-
-        $users = DB::table('users')->get();
+        $user = User::findOrFail($id);
+        $users = User::all();
 
         return view('users', compact('user', 'users'));
     }
 
-    public function update()
+    public function update(Request $request)
     {
-        $id = $_POST['id'];
-
-        DB::table('users')->where('id', '=', $id)->update([
-            'name' => $_POST['name'],
-            'email' => $_POST['email']
+        $validated = $request->validate([
+            'id' => 'required|exists:users,id',
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,' . $request->id
+        ], [
+            'id.required' => 'User ID is required.',
+            'id.exists' => 'User does not exist.',
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already taken.'
         ]);
+
+        $user = User::findOrFail($request->id);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        $user->save();
 
         return redirect('users');
     }
